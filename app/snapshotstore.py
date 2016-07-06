@@ -8,5 +8,13 @@ class Snapshotstore:
         self.port = port
         self.connectionfactory = connectionfactory
 
-    def add_snapshot(self, created, tablename):
-        return 0
+        self.connectionstring = ("dbname='{}' user='{}' host='{}' port='{}' password='{}'").format(dbname, user, host, port, password)
+
+    def add_snapshot(self, tablename):
+        connection = self.connectionfactory.get_conn(self.connectionstring)
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO snapshots (created, tablename) VALUES (CURRENT_TIMESTAMP,'{0}')".format(tablename))
+
+        connection.commit()
+        cursor.close()
+        connection.close()

@@ -4,7 +4,7 @@ import testing.postgresql
 from unittest.mock import MagicMock
 from sqlalchemy import create_engine
 from app import snapshotstore
-from time import time
+from datetime import datetime
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
 
@@ -29,27 +29,29 @@ class WorkplaceTest(unittest.TestCase):
     def test_add_snapshot(self):
 
         engine = create_engine(self.postgresql.url())
-
-        conn = psycopg2.connect(**self.postgresql.dsn())
-
+        conn = self.open_connection()
         connfactory = MagicMock()
-        connfactory.get_conn().return_value = conn
 
         cursor = conn.cursor()
-        cursor.execute("CREATE TABLE snapshots(created timestamp, tablename varchar(256))")
+        cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
+        conn.commit()
 
+        connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        input_created = time()
-        input_tablename = 'sometable'
-        store.add_snapshot(input_created, input_tablename)
+        store.add_snapshot('sometable1')
+
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.add_snapshot('sometable2')
 
         cursor.execute("SELECT created, tablename FROM snapshots ORDER BY created DESC LIMIT 1")
         actual = cursor.fetchone()
-
         cursor.close()
-        conn.rollback()
         conn.close()
 
-        expected = [[input_created, input_tablename]]
+        expected = 'sometable2'
 
-        self.assertEqual(actual,expected)
+        self.assertEqual(actual[1],expected)
+
+    def open_connection(self):
+        return psycopg2.connect(**self.postgresql.dsn())
