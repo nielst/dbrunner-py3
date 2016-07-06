@@ -1,0 +1,24 @@
+#python3 -m "nose"
+#needs more work patching analytics
+
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
+from app import segmentupdater
+import collections
+import analytics
+@patch('analytics.Client')
+
+class MyTest(unittest.TestCase):
+    def test_column_identification(self,analyticsmock):
+        updatedrows = [
+            {'id': 8933, 'firstname': 'Jerry', 'lastname':'Nichols'}]
+        writekey = "test"
+
+        updater = segmentupdater.SegmentUpdater()
+        updater.identify(updatedrows,writekey)
+
+        analyticsmock.identify.assert_called_once_with('foo', bar='baz')
+
+#analyticsmock.Client.assert_called_with('test', debug=False, on_error=None, send=True)
+#analyticsmock.identify.assert_called_with(1, 2, 3, test='wow')
