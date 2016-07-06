@@ -30,3 +30,15 @@ class Snapshotstore:
         connection.close()
 
         return records
+
+    def provision(self):
+        connection = self.connectionfactory.get_conn(self.connectionstring)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT EXISTS(select * from information_schema.tables where table_name='snapshots')")
+        if not cursor.fetchone()[0]:
+            cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
+            connection.commit()
+
+        cursor.close()
+        connection.close()

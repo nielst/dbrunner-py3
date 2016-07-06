@@ -28,12 +28,11 @@ class WorkplaceTest(unittest.TestCase):
 
     def test_add_snapshot(self):
         engine = create_engine(self.postgresql.url())
-        conn = self.open_connection()
         connfactory = MagicMock()
 
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
-        conn.commit()
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.provision()
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
@@ -43,6 +42,8 @@ class WorkplaceTest(unittest.TestCase):
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
         store.add_snapshot('sometable2')
 
+        conn = self.open_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT created, tablename FROM snapshots ORDER BY created DESC LIMIT 1")
         actual = cursor.fetchone()
         cursor.close()

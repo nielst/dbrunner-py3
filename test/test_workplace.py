@@ -76,3 +76,25 @@ class WorkplaceTest(unittest.TestCase):
         expected = [[3, 'Bob', 0, '(3,Bob,0)', None]]
 
         self.assertEqual(updates,expected)
+
+    def test_less_than_2_snapshots(self):
+
+        engine = create_engine(self.postgresql.url())
+        connfactory = MagicMock()
+        connfactory.get_conn.return_value = self.open_connection()
+
+        nullinputquery = None
+
+        wp = workplace.Workplace(self.dbname, self.user, self.password, self.host, self.port, nullinputquery, connfactory)
+        wp.snapshotstore.provision()
+
+        connfactory.get_conn.return_value = self.open_connection()
+        wp = workplace.Workplace(self.dbname, self.user, self.password, self.host, self.port, nullinputquery, connfactory)
+        actual = wp.get_differences()
+
+        expected = []
+
+        self.assertEqual(actual,expected)
+
+    def open_connection(self):
+        return psycopg2.connect(**self.postgresql.dsn())

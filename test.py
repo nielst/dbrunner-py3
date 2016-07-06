@@ -22,6 +22,7 @@ inputquery = inputquery.InputQuery(inputsql, 'dev', 'masteruser', 'Hackfun57', '
 
 #workplace represents the postgre worker database
 work = workplace.Workplace('nielstest', 'nielst', 'Funhack75', 'nielstest.cuw6bpg82nly.us-west-2.rds.amazonaws.com', '5432', inputquery, connectionfactory)
+work.snapshotstore.provision()
 
 #run query and store result
 work.download_data()
