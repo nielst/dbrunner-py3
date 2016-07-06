@@ -27,7 +27,6 @@ class WorkplaceTest(unittest.TestCase):
         self.postgresql.stop()
 
     def test_add_snapshot(self):
-
         engine = create_engine(self.postgresql.url())
         conn = self.open_connection()
         connfactory = MagicMock()
@@ -50,8 +49,36 @@ class WorkplaceTest(unittest.TestCase):
         conn.close()
 
         expected = 'sometable2'
-
         self.assertEqual(actual[1],expected)
+
+    def test_get_latest(self):
+        engine = create_engine(self.postgresql.url())
+        conn = self.open_connection()
+        connfactory = MagicMock()
+
+        cursor = conn.cursor()
+        cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.add_snapshot('sometable1')
+
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.add_snapshot('sometable2')
+
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.add_snapshot('sometable3')
+
+        actual = store.get_latest(2)
+
+        self.assertEqual(actual[0][1],'sometable3')
+        self.assertEqual(actual[1][1],'sometable2')
+
 
     def open_connection(self):
         return psycopg2.connect(**self.postgresql.dsn())

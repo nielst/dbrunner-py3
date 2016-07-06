@@ -18,3 +18,6 @@ class Snapshotstore:
         connection.commit()
         cursor.close()
         connection.close()
+
+    def get_latest(self, limit):
+        return 0
