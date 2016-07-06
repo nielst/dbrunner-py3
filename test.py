@@ -22,12 +22,13 @@ inputquery = inputquery.InputQuery(inputsql, 'dev', 'masteruser', 'Hackfun57', '
 
 #workplace represents the postgre worker database
 work = workplace.Workplace('nielstest', 'nielst', 'Funhack75', 'nielstest.cuw6bpg82nly.us-west-2.rds.amazonaws.com', '5432', inputquery, connectionfactory)
+work.snapshotstore.provision()
 
 #run query and store result
 work.download_data()
 
 #get the differences, if any
-updatedrows = y.get_differences()
+updatedrows = work.get_differences()
 print(updatedrows)
 
 #specify a writekey and send identify calls to segment for each updated record

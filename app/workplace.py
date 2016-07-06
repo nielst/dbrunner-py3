@@ -2,6 +2,7 @@ import psycopg2
 import psycopg2.extras
 import time
 import json
+from app import snapshotstore
 
 class Workplace:
 
@@ -16,13 +17,10 @@ class Workplace:
         self.connectionfactory = connectionfactory
 
         self.connectionstring = ("dbname='{}' user='{}' host='{}' port='{}' password='{}'").format(dbname, user, host, port, password)
-
+        self.snapshotstore = snapshotstore.Snapshotstore(dbname, user, password, host, port, connectionfactory)
 
     def download_data(self):
         conn = self.connectionfactory.get_conn(self.connectionstring)
-
-        #expect only one worker per job at a time
-        self.__load_updates()
 
         cur = conn.cursor()
 
@@ -41,15 +39,17 @@ class Workplace:
         cur.close()
         conn.close()
 
-        self.updates.append(table_name)
-        self.__save_updates()
+        self.snapshotstore.add_snapshot(table_name)
 
     def get_differences(self):
         conn = self.connectionfactory.get_conn(self.connectionstring)
-        self.__load_updates()
+        snapshots = self.snapshotstore.get_latest(2)
 
-        #unit test that we are comparing the right two tables
-        updatedrows = self.__detect_updates(self.updates[-1], self.updates[-2], conn)
+        if len(snapshots) < 2:
+            return []
+
+        #TODO unit test that we are comparing the right two tables
+        updatedrows = self.__detect_updates(snapshots[0][1], snapshots[1][1], conn)
 
         conn.close()
 
@@ -75,13 +75,3 @@ class Workplace:
         records = dict_cur.fetchall()
         dict_cur.close
         return records
-
-    def __load_updates(self):
-        import os.path
-        if os.path.isfile('data.txt'):
-            with open('data.txt', 'r') as infile:
-                self.updates = json.load(infile)
-
-    def __save_updates(self):
-        with open('data.txt', 'w') as outfile:
-            json.dump(self.updates, outfile)
