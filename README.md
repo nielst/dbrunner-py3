@@ -7,15 +7,21 @@ HTTP API
 
 Best way to experiment is to run the HTTP API
 
-    http://dbrunner-env.us-west-2.elasticbeanstalk.com/run
+    POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run
 
-All arguments are optional, but warehouse and workplace must be present even if they are empty
-Warehouse is where we want to execute the sql query and monitor for changes
-Workplace is the Postgre where we store results and compare
+Minimum arguments:
+    { "warehouse":{}, "workplace":{} }
+In this case it will run with default parameters, and return an empty list of no records updated
+
+Force a change to see a record get returned:
+    { "force_change": "true", "warehouse":{}, "workplace":{} }
+
+And add a writekey for the change to be identified to segment:
+    { "writekey": "yourkey", "force_change": "true", "warehouse":{}, "workplace":{} }
+
+You can also specify your own warehouse, the query to run and Postgre worker store:
 
   {
-    "writekey": "abc",
-    "force_change": "true",
     "sql": "sql query to execute in warehouse",
     "warehouse":{
     	"dbname":"",
