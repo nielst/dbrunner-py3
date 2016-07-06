@@ -74,6 +74,8 @@ class WorkplaceTest(unittest.TestCase):
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
         store.add_snapshot('sometable3')
 
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
         actual = store.get_latest(2)
 
         self.assertEqual(actual[0][1],'sometable3')

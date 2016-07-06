@@ -20,4 +20,13 @@ class Snapshotstore:
         connection.close()
 
     def get_latest(self, limit):
-        return 0
+        connection = self.connectionfactory.get_conn(self.connectionstring)
+        cursor = connection.cursor()
+        cursor.execute("SELECT created, tablename FROM snapshots ORDER BY created DESC LIMIT {}".format(limit))
+        records = cursor.fetchall()
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return records
