@@ -77,8 +77,10 @@ class Workplace:
         return records
 
     def __load_updates(self):
-        with open('data.txt', 'r') as infile:
-            self.updates = json.load(infile)
+        import os.path
+        if os.path.isfile('data.txt'):
+            with open('data.txt', 'r') as infile:
+                self.updates = json.load(infile)
 
     def __save_updates(self):
         with open('data.txt', 'w') as outfile:
