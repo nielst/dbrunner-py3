@@ -8,6 +8,7 @@ HTTP API
 Best way to experiment is to run the HTTP API
 
     POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run
+    Content-Type: application/json
 
 Minimum arguments:
     { "warehouse":{}, "workplace":{} }
