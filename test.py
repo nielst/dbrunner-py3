@@ -27,7 +27,7 @@ work = workplace.Workplace('nielstest', 'nielst', 'Funhack75', 'nielstest.cuw6bp
 work.download_data()
 
 #get the differences, if any
-updatedrows = y.get_differences()
+updatedrows = work.get_differences()
 print(updatedrows)
 
 #specify a writekey and send identify calls to segment for each updated record
