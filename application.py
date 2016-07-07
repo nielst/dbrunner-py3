@@ -5,6 +5,9 @@ from app import workplace
 from app import segmentupdater
 from app import connectionfactory
 from app import configstore
+from flask import make_response
+from flask import abort
+import uuid
 
 application = Flask(__name__)
 
@@ -51,8 +54,62 @@ def run(config_id):
 
     return jsonify(updatedrows)
 
+@application.route('/dbrunner/api/v1.0/configs', methods=['GET'])
+def get_configs():
+    connfactory = connectionfactory.ConnectionFactory()
+
+    startkey = request.args.get('startkey')
+
+    store = configstore.ConfigStore()
+    return jsonify(store.get_configs(startkey))
+
+@application.route('/dbrunner/api/v1.0/configs/<string:config_id>', methods=['GET'])
+def get_config(config_id):
+    connfactory = connectionfactory.ConnectionFactory()
+
+    store = configstore.ConfigStore()
+    config = store.get_config(config_id)
+    if not config:
+        abort(404)
+
+    return jsonify(config)
+
+@application.route('/dbrunner/api/v1.0/configs', methods=['POST'])
+def insert_config():
+    connfactory = connectionfactory.ConnectionFactory()
+
+    newconfig = {}
+    newconfig['id'] = str(uuid.uuid4())
+    newconfig['query'] = request.json.get('query')
+    newconfig['warehouse'] = request.json.get('warehouse')
+    newconfig['workplace'] = request.json.get('workplace')
+
+    store = configstore.ConfigStore()
+    store.insert_config(newconfig)
+
+    return ('', 204)
+
+@application.route('/dbrunner/api/v1.0/configs/<string:config_id>', methods=['PUT'])
+def update_config(config_id):
+    connfactory = connectionfactory.ConnectionFactory()
+
+    store = configstore.ConfigStore()
+    config = store.get_config(config_id)
+    if not config:
+        abort(404)
+
+    updateconfig = {}
+    updateconfig['id'] = config_id
+    updateconfig['query'] = request.json.get('query')
+    updateconfig['warehouse'] = request.json.get('warehouse')
+    updateconfig['workplace'] = request.json.get('workplace')
+
+    return jsonify(store.update_config(updateconfig))
 
 
+@application.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 if __name__ == '__main__':
     application.run(debug=True)
