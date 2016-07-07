@@ -29,8 +29,11 @@ Configuration for each job is stored in Dynamodb in the following format:
 The configurations are managed the following REST API:
 
 GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+
 GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+
 POST http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+
 PUT http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
 
 The API does not have authentication yet
@@ -50,7 +53,7 @@ The endpoint will synchronously do the following
 - compare the contents to the previous snapshot and find updated records
 - if given a writekey, send an identify call to Segment for each updated record
 
-    Payload: { "writekey": "123" }
+        Payload: { "writekey": "123" }
 
 Usually there will not be any changes, since the warehouse contains stale sample data.
 However you can easily force a single record to update:
