@@ -1,5 +1,4 @@
 #python3 -m "nose" -v
-
 import unittest
 from unittest.mock import MagicMock
 from app import inputquery
@@ -41,6 +40,8 @@ class InputQueryTest(unittest.TestCase):
                     {'datatype': 'varchar', 'name': 'phone'}
                 ]
             )
+        connfactory.get_conn().cursor().fetchall.assert_called_with()
+
 
     def test_missing_id_column(self):
         querycolumns = (self.col2, self.col3)

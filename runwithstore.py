@@ -14,7 +14,7 @@ connectionfactory = connectionfactory.ConnectionFactory()
 
 #setup the input query
 inputquery = inputquery.InputQuery(
-    config['sql'],
+    config['query'],
     config['warehouse']['dbname'], config['warehouse']['user'], config['warehouse']['password'],
     config['warehouse']['host'], config['warehouse']['port'], connectionfactory)
 
