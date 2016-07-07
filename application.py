@@ -8,8 +8,10 @@ from app import configstore
 from flask import make_response
 from flask import abort
 import uuid
+from flask_cors import CORS, cross_origin
 
 application = Flask(__name__)
+CORS(application)
 
 @application.route('/run/<string:config_id>', methods=['POST'])
 def run(config_id):
