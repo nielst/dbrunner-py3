@@ -2,55 +2,67 @@
 
 POC for finding differences over time in SQL results and raising those to segment.com
 
-HTTP API
+Configurations
 --------------
 
-Best way to experiment is to run the HTTP API
-
-    POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run
-    Content-Type: application/json
-
-Minimum arguments:
-
-    { "warehouse":{}, "workplace":{} }
-
-In this case it will run with default parameters, where it will query a sample Redshift and store the results every time in a new table in RDS Postgre. It will also compare and return changes. Normally there will be no changes.
-
-Force a change to see a record get returned:
-
-    { "force_change": "true", "warehouse":{}, "workplace":{} }
-
-You can also connect to the Redshift and make some more changes if you will.
-
-Add a writekey for the changes to be identified to one of your Segment projects:
-
-    { "writekey": "yourkey", "force_change": "true", "warehouse":{}, "workplace":{} }
-
-You can also specify your own warehouse, the query to run, and Postgre worker store:
-
-      {
-        "sql": "sql query to execute in warehouse",
-        "warehouse":{
-        	"dbname":"",
-        	"user":"",
-        	"password":"",
-        	"host":"",
-        	"port":""
-        },
-        "workplace":{
-        	"dbname":"",
-        	"user":"",
-        	"password":"",
-        	"host":"",
-        	"port":""
-        }
+Configuration for each job is stored in Dynamodb in the following format:
+    
+    {
+      "id": "1",
+      "query": "SELECT userid as id, firstname, lastname, total_quantity\nFROM   (SELECT buyerid, sum(qtysold) total_quantity\nFROM  sales\nGROUP BY buyerid\nORDER BY total_quantity desc limit 10) Q, users\nWHERE Q.buyerid = userid\nORDER BY Q.total_quantity desc",
+      "warehouse": {
+        "dbname": "",
+        "host": "",
+        "password": "",
+        "port": "",
+        "user": ""
+      },
+      "workplace": {
+        "dbname": "",
+        "host": "",
+        "password": "",
+        "port": "",
+        "user": ""
       }
-  
+    }
+
+The configurations are managed the following REST API:
+
+GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+POST http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+PUT http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+
+The API does not have authentication yet
+
+How to run
+--------------
+
+POST to the following endpoint to run a stored configuration: Configuration 1 is in working state
+
+    POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run/{config_id}
+    Content-Type: application/json
+    Required payload: {}
+
+The endpoint will synchronously do the following
+- execute the query against the warehouse
+- store the result in a new table in Postgressql
+- compare the contents to the previous snapshot and find updated records
+- if given a writekey, send an identify call to Segment for each updated record
+
+    Payload: { "writekey": "123" }
+
+Usually there will not be any changes, since the warehouse contains stale sample data.
+However you can easily force a single record to update:
+
+    Payload: { "force_change": "true" }
+
+You can also make your own updates to the redshift warehouse. Parameters are in the stored configuration 1.
   
 Unit tests
 --------------
 
-Some logic is to be run by Postgre, and the tests include launching a database
+Some logic is to be run by Postgre, and the tests include launching a database. These require postgres installed.
 
     #python3 -m "nose" -v
 
