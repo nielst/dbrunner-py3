@@ -21,7 +21,7 @@ def run(config_id):
     config = store.get_config(config_id)
 
     query = inputquery.InputQuery(
-        config['sql'],
+        config['query'],
         config['warehouse']['dbname'],
         config['warehouse']['user'],
         config['warehouse']['password'],
