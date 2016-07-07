@@ -1,15 +1,23 @@
+#no unit tests as we cant mock assert expressions (not deterministic)
+#ephemeral dynamodb not available for local integration, ddbmock no longer maintained
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import json
 import decimal
 
 class ConfigStore:
+    def __init__(self):
+        self.TABLENAME = 'dbrunner_configs'
+
+    def get_conn(self):
+        return boto3.resource('dynamodb', region_name='us-west-2')
+
     def get_config(self,id):
-        dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-        table = dynamodb.Table('dbrunner_configs')
+        dynamodb = self.get_conn()
+        table = dynamodb.Table(self.TABLENAME)
 
         response = table.query(
-            KeyConditionExpression=Key('id').eq(id)
+            KeyConditionExpression=Key('id').eq('1')
         )
 
         if len(response['Items']) == 0:
@@ -18,8 +26,8 @@ class ConfigStore:
         return response['Items'][0]
 
     def get_configs(self, startkey):
-        dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-        table = dynamodb.Table('dbrunner_configs')
+        dynamodb = self.get_conn()
+        table = dynamodb.Table(self.TABLENAME)
 
         pe = "id, #query, warehouse.host, warehouse.dbname, workplace.host, workplace.dbname"
         ean = { "#query": "query", }
@@ -36,8 +44,8 @@ class ConfigStore:
         return result
 
     def update_config(self,config):
-        dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-        table = dynamodb.Table('dbrunner_configs')
+        dynamodb = self.get_conn()
+        table = dynamodb.Table(self.TABLENAME)
 
         response = table.update_item(
             Key={
@@ -58,8 +66,8 @@ class ConfigStore:
         return response['Attributes']
 
     def insert_config(self,config):
-        dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-        table = dynamodb.Table('dbrunner_configs')
+        dynamodb = self.get_conn()
+        table = dynamodb.Table(self.TABLENAME)
 
         response = table.put_item(
            Item={
