@@ -60,8 +60,9 @@ However you can easily force a single record to update:
 
     Payload: { "force_change": "true" }
 
-You can also make your own updates to the redshift warehouse. Parameters are in the stored configuration 1.
-  
+You can also make your own updates to the redshift warehouse, or connect to your own.
+
+
 Unit tests
 --------------
 
@@ -73,3 +74,4 @@ Full sequence
 --------------
 
 Run the full sequence locally with test.py
+
