@@ -2,6 +2,10 @@ machine:
   python:
     version: 3.4.3
 
+dependencies:
+  pre:
+    - sudo pip install awsebcli
+    
 deployment:
   production:
     branch: master
