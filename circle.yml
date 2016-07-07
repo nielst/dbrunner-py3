@@ -10,5 +10,6 @@ deployment:
   production:
     branch: master
     commands:
+      - ls
       - eb use dbrunner-env
       - eb deploy
