@@ -1,10 +1,11 @@
+test/
+##################################
+# copy of gitignore from here down
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# my local data file
-data.txt
 
 # C extensions
 *.so
