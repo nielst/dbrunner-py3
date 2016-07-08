@@ -11,3 +11,7 @@ deployment:
     branch: master
     commands:
       - eb deploy
+
+test:
+  override:
+    - python3 -m "nose" -v
