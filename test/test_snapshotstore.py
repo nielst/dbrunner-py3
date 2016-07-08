@@ -36,11 +36,11 @@ class WorkplaceTest(unittest.TestCase):
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        store.add_snapshot('sometable1')
+        store.add_snapshot('sometable1', '1')
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        store.add_snapshot('sometable2')
+        store.add_snapshot('sometable2', '1')
 
         conn = self.open_connection()
         cursor = conn.cursor()
@@ -57,30 +57,28 @@ class WorkplaceTest(unittest.TestCase):
         conn = self.open_connection()
         connfactory = MagicMock()
 
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
-        conn.commit()
-        cursor.close()
-        conn.close()
+        connfactory.get_conn.return_value = self.open_connection()
+        store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
+        store.provision()
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        store.add_snapshot('sometable1')
+        store.add_snapshot('sometable1', '1')
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        store.add_snapshot('sometable2')
+        store.add_snapshot('sometable2', 'anotherid')
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        store.add_snapshot('sometable3')
+        store.add_snapshot('sometable3', '1')
 
         connfactory.get_conn.return_value = self.open_connection()
         store = snapshotstore.Snapshotstore(self.dbname, self.user, self.password, self.host, self.port, connfactory)
-        actual = store.get_latest(2)
+        actual = store.get_latest(2, '1')
 
         self.assertEqual(actual[0][1],'sometable3')
-        self.assertEqual(actual[1][1],'sometable2')
+        self.assertEqual(actual[1][1],'sometable1')
 
 
     def open_connection(self):

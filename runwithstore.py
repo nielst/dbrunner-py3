@@ -6,8 +6,9 @@ from app import configstore
 
 #run a full sequence locally
 
+configid = '1'
 store = configstore.ConfigStore()
-config = store.get_config('1')
+config = store.get_config(configid)
 
 #connectionfactory is here to be able to mock the connection
 connectionfactory = connectionfactory.ConnectionFactory()
@@ -25,10 +26,10 @@ work = workplace.Workplace(
 work.snapshotstore.provision()
 
 #run query and store result
-work.download_data()
+work.download_data(configid)
 
 #get the differences, if any
-updatedrows = work.get_differences()
+updatedrows = work.get_differences(configid)
 print(updatedrows)
 
 #specify a writekey and send identify calls to segment for each updated record

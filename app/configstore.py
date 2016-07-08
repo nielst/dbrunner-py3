@@ -17,7 +17,7 @@ class ConfigStore:
         table = dynamodb.Table(self.TABLENAME)
 
         response = table.query(
-            KeyConditionExpression=Key('id').eq('1')
+            KeyConditionExpression=Key('id').eq(id)
         )
 
         if len(response['Items']) == 0:
