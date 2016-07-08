@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# my local data file
-data.txt
-
 # C extensions
 *.so
 
@@ -92,6 +89,6 @@ ENV/
 .ropeproject
 
 # Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+#.elasticbeanstalk/*
+#!.elasticbeanstalk/*.cfg.yml
+#!.elasticbeanstalk/*.global.yml
