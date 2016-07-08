@@ -90,7 +90,7 @@ class WorkplaceTest(unittest.TestCase):
 
         connfactory.get_conn.return_value = self.open_connection()
         wp = workplace.Workplace(self.dbname, self.user, self.password, self.host, self.port, nullinputquery, connfactory)
-        actual = wp.get_differences()
+        actual = wp.get_differences('1')
 
         expected = []
 

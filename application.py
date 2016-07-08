@@ -5,6 +5,7 @@ from app import workplace
 from app import segmentupdater
 from app import connectionfactory
 from app import configstore
+from app import snapshotstore
 from flask import make_response
 from flask import abort
 import uuid
@@ -19,6 +20,8 @@ def run(config_id):
 
     store = configstore.ConfigStore()
     config = store.get_config(config_id)
+    if not config:
+        abort(404)
 
     query = inputquery.InputQuery(
         config['query'],
@@ -38,7 +41,7 @@ def run(config_id):
         tempcur.close
         tempconn.close
 
-    y = workplace.Workplace(
+    work = workplace.Workplace(
             config['workplace']['dbname'],
             config['workplace']['user'],
             config['workplace']['password'],
@@ -46,9 +49,11 @@ def run(config_id):
             config['workplace']['port'],
             query,
             connfactory)
+    #TODO get this called during deployment
+    work.snapshotstore.provision()
 
-    y.download_data()
-    updatedrows = y.get_differences()
+    work.download_data(config_id)
+    updatedrows = work.get_differences(config_id)
 
     if request.json.get('writekey'):
         segment = segmentupdater.SegmentUpdater()
@@ -107,7 +112,6 @@ def update_config(config_id):
     updateconfig['workplace'] = request.json.get('workplace')
 
     return jsonify(store.update_config(updateconfig))
-
 
 @application.errorhandler(404)
 def not_found(error):

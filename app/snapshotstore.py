@@ -10,19 +10,19 @@ class Snapshotstore:
 
         self.connectionstring = ("dbname='{}' user='{}' host='{}' port='{}' password='{}'").format(dbname, user, host, port, password)
 
-    def add_snapshot(self, tablename):
+    def add_snapshot(self, tablename, configid):
         connection = self.connectionfactory.get_conn(self.connectionstring)
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO snapshots (created, tablename) VALUES (CURRENT_TIMESTAMP,'{0}')".format(tablename))
+        cursor.execute("INSERT INTO snapshots (created, tablename, configid) VALUES (CURRENT_TIMESTAMP,'{0}', '{1}')".format(tablename,configid))
 
         connection.commit()
         cursor.close()
         connection.close()
 
-    def get_latest(self, limit):
+    def get_latest(self, limit, configid):
         connection = self.connectionfactory.get_conn(self.connectionstring)
         cursor = connection.cursor()
-        cursor.execute("SELECT created, tablename FROM snapshots ORDER BY created DESC LIMIT {}".format(limit))
+        cursor.execute("SELECT created, tablename FROM snapshots WHERE configid = '{0}' ORDER BY created DESC LIMIT {1}".format(configid,limit))
         records = cursor.fetchall()
 
         connection.commit()
@@ -38,6 +38,11 @@ class Snapshotstore:
         cursor.execute("SELECT EXISTS(select * from information_schema.tables where table_name='snapshots')")
         if not cursor.fetchone()[0]:
             cursor.execute("CREATE TABLE snapshots(created timestamptz, tablename varchar(256))")
+            connection.commit()
+
+        cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='snapshots' and column_name='configid';")
+        if not cursor.fetchone():
+            cursor.execute("ALTER TABLE snapshots ADD COLUMN configid varchar(100)")
             connection.commit()
 
         cursor.close()

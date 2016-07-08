@@ -13,13 +13,12 @@ class Workplace:
         self.host = host
         self.port = port
         self.inputquery = inputquery
-        self.updates = []
         self.connectionfactory = connectionfactory
 
         self.connectionstring = ("dbname='{}' user='{}' host='{}' port='{}' password='{}'").format(dbname, user, host, port, password)
         self.snapshotstore = snapshotstore.Snapshotstore(dbname, user, password, host, port, connectionfactory)
 
-    def download_data(self):
+    def download_data(self,configid):
         conn = self.connectionfactory.get_conn(self.connectionstring)
 
         cur = conn.cursor()
@@ -39,11 +38,11 @@ class Workplace:
         cur.close()
         conn.close()
 
-        self.snapshotstore.add_snapshot(table_name)
+        self.snapshotstore.add_snapshot(table_name,configid)
 
-    def get_differences(self):
+    def get_differences(self,configid):
         conn = self.connectionfactory.get_conn(self.connectionstring)
-        snapshots = self.snapshotstore.get_latest(2)
+        snapshots = self.snapshotstore.get_latest(2,configid)
 
         if len(snapshots) < 2:
             return []
