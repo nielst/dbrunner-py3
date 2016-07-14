@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: dbrunner-env
+    environment: dbrunner-prod
 global:
   application_name: dbrunner
   default_ec2_keyname: aws-eb
