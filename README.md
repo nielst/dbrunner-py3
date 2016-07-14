@@ -30,13 +30,13 @@ The *query* will be executed against the *warehouse* and results stored in *work
 
 The configurations are managed the following REST API:
 
-GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs (try to click this one)
+GET /api/v1.0/configs (try to click this one)
 
-GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+GET /api/v1.0/configs/{id}
 
-POST http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+POST /api/v1.0/configs
 
-PUT http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+PUT /api/v1.0/configs/{id}
 
 The API does not have authentication yet
 
@@ -45,7 +45,7 @@ How to run
 
 POST to the following endpoint to run a stored configuration: Configuration id 1 is in working state
 
-    POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run/{config_id}
+    POST: /run/{config_id}
     Content-Type: application/json
     Required payload: {}
 
