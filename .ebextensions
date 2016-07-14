@@ -1,0 +1,7 @@
+packages: 
+  yum:
+    postgresql: []
+    postgresql-server: []
+    postgresql-devel: []
+    postgresql-contrib: []
+    postgresql-docs: []
