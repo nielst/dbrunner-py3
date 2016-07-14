@@ -38,7 +38,7 @@ POST /api/v1.0/configs
 
 PUT /api/v1.0/configs/{id}
 
-Live test: https://j7394qf30g.execute-api.us-west-2.amazonaws.com/prod/run/1 (requires api key)
+Live test: https://j7394qf30g.execute-api.us-west-2.amazonaws.com/prod (requires api key)
 
 How to run
 --------------
