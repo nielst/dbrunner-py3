@@ -30,7 +30,7 @@ The *query* will be executed against the *warehouse* and results stored in *work
 
 The configurations are managed the following REST API:
 
-GET /api/v1.0/configs (try to click this one)
+GET /api/v1.0/configs
 
 GET /api/v1.0/configs/{id}
 
