@@ -26,24 +26,26 @@ Configuration for each job is stored in Dynamodb in the following format:
       }
     }
 
+The *query* will be executed against the *warehouse* and results stored in *workplace*. Use the *id* to run the job
+
 The configurations are managed the following REST API:
 
-GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+GET /api/v1.0/configs
 
-GET http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+GET /api/v1.0/configs/{id}
 
-POST http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs
+POST /api/v1.0/configs
 
-PUT http://dbrunner-env.us-west-2.elasticbeanstalk.com/dbrunner/api/v1.0/configs/{id}
+PUT /api/v1.0/configs/{id}
 
 The API does not have authentication yet
 
 How to run
 --------------
 
-POST to the following endpoint to run a stored configuration: Configuration 1 is in working state
+POST to the following endpoint to run a stored configuration: Configuration id 1 is in working state
 
-    POST: http://dbrunner-env.us-west-2.elasticbeanstalk.com/run/{config_id}
+    POST: /run/{config_id}
     Content-Type: application/json
     Required payload: {}
 
@@ -60,21 +62,14 @@ However you can easily force a single record to update:
 
     Payload: { "force_change": "true" }
 
-You can also make your own updates to the redshift warehouse, or connect to your own.
+See the integration test for more details.
+You can also make your own updates to the redshift warehouse, or connect to your own. (uh-oh, schema issues ahead?)
 
 
-Unit tests
+Unit & integration tests
 --------------
 
-Some logic is to be run by Postgre, and the tests include launching a database. These require postgres installed.
+Query and compare logic implemented in executed by Postgre. These unit tests requires postgres installed.
 
     #python3 -m "nose" -v
 
-Full sequence
---------------
-
-Run the full sequence locally with test.py
-
-
-
-.
