@@ -1,6 +1,8 @@
 # dbrunner-py3
 
-POC for finding differences over time in SQL results and raising those to segment.com
+POC for finding differences over time in SQL results and raising those to segment.com.
+
+Scenario is that our data warehouses enable us to combine data across all aspects of our business and generate powerful insights, such as find our low usage, high value, up-for-renewal customers. These reports are great, but to take action we need this data in other tools such as email automation. This POC enables us to run there queries, detect differences in the results and pass into Segment - which then pass into all relevant tools.
 
 Configurations
 --------------
